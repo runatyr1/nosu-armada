@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
-  isNostrixHosted,
+  isNosuHosted,
   publishHostNavigation,
   subscribeHostNavigation,
 } from "./hostSignerBridge";
@@ -16,7 +16,7 @@ export function HostNavigationSync(): null {
   current.current = location;
 
   useEffect(() => {
-    if (!isNostrixHosted()) return;
+    if (!isNosuHosted()) return;
     return subscribeHostNavigation((path) => {
       const here = `${current.current.pathname}${current.current.search}${current.current.hash}`;
       devDiagnostic("navigation:host-to-child", { path, here, changed: path !== here });
@@ -25,7 +25,7 @@ export function HostNavigationSync(): null {
   }, [navigate]);
 
   useEffect(() => {
-    if (!isNostrixHosted()) return;
+    if (!isNosuHosted()) return;
     const path = `${location.pathname}${location.search}${location.hash}`;
     devDiagnostic("navigation:child-to-host", { path });
     publishHostNavigation(path);

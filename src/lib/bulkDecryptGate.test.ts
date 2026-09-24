@@ -10,7 +10,7 @@ import {
 import type { NostrSigner } from "@nostrify/nostrify";
 
 vi.mock("@/integration/hostSignerBridge", () => ({
-  isNostrixHosted: () => false,
+  isNosuHosted: () => false,
   getHostSession: () => ({ status: "anonymous" }),
 }));
 

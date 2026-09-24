@@ -1,12 +1,12 @@
 /**
- * NIP-07-compatible signer facade for the Nostrix host application.
+ * NIP-07-compatible signer facade for the Nosu host application.
  *
  * Armada continues to own its login records, database, relay routing and all
  * protocol code. Only signer operations cross this boundary, over an
  * origin-checked postMessage channel. No secret key is requested or exposed.
  */
 
-const PROTOCOL = "nostrix-groups-v1";
+const PROTOCOL = "nosu-groups-v1";
 
 type HostSession = {
   status: "anonymous" | "readonly" | "signed";
@@ -60,11 +60,11 @@ const pending = new Map<
 
 function bridgeLog(event: string, detail: Record<string, unknown> = {}): void {
   if (!import.meta.env.DEV) return;
-  console.debug(`[nostrix groups child] ${event} ${JSON.stringify(detail)}`);
+  console.debug(`[nosu groups child] ${event} ${JSON.stringify(detail)}`);
 }
 
 function configuredParentOrigin(): string | undefined {
-  const configured = import.meta.env.VITE_NOSTRIX_PARENT_ORIGIN as string | undefined;
+  const configured = import.meta.env.VITE_NOSU_PARENT_ORIGIN as string | undefined;
   if (configured) return new URL(configured).origin;
   if (!document.referrer) return undefined;
   try {
@@ -109,7 +109,7 @@ function dispatch(call: QueuedCall): void {
       method: call.method,
       elapsedMs: Math.round(performance.now() - timedOut.startedAt),
     });
-    timedOut.reject(new Error("The Nostrix signer request timed out."));
+    timedOut.reject(new Error("The Nosu signer request timed out."));
   }, 120_000);
   pending.set(call.id, {
     method: call.method,
@@ -146,7 +146,7 @@ function pumpQueue(): void {
 
 function request(method: string, params: unknown[] = []): Promise<unknown> {
   if (!embedded || !parentOrigin) {
-    return Promise.reject(new Error("The Nostrix host signer is unavailable."));
+    return Promise.reject(new Error("The Nosu host signer is unavailable."));
   }
   const id = crypto.randomUUID();
   return new Promise((resolve, reject) => {
@@ -298,7 +298,7 @@ if (embedded && parentOrigin) {
       enumerable: true,
     });
   } catch (error) {
-    console.error("[nostrix] Could not install the embedded signer facade", error);
+    console.error("[nosu] Could not install the embedded signer facade", error);
   }
 
   sendHello();
@@ -310,7 +310,7 @@ if (embedded && parentOrigin) {
   });
 }
 
-export function isNostrixHosted(): boolean {
+export function isNosuHosted(): boolean {
   return embedded && parentOrigin !== undefined;
 }
 

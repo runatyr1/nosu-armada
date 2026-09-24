@@ -1,6 +1,6 @@
 import { canPeekDecryptCache } from "@/lib/AppSigner";
 import { ensureDecryptConsent, getDecryptConsent } from "@/lib/decryptConsent";
-import { getHostSession, isNostrixHosted } from "@/integration/hostSignerBridge";
+import { getHostSession, isNosuHosted } from "@/integration/hostSignerBridge";
 
 import type { NostrSigner } from "@nostrify/nostrify";
 
@@ -69,7 +69,7 @@ async function allCached(signer: NostrSigner, method: "nip04" | "nip44", targets
  * is treated conservatively as "can prompt".
  */
 export function signerNeedsApproval(method: string | undefined): boolean {
-  if (method === "extension" && isNostrixHosted() && getHostSession().signerKind === "privatekey") {
+  if (method === "extension" && isNosuHosted() && getHostSession().signerKind === "privatekey") {
     return false;
   }
   return method !== "nsec";

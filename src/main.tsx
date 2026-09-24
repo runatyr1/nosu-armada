@@ -3,7 +3,7 @@
 // import so the statics exist before any module that reads them evaluates.
 import "./polyfills";
 import { devDiagnostic } from "./integration/devDiagnostics";
-import { isNostrixHosted } from "./integration/hostSignerBridge";
+import { isNosuHosted } from "./integration/hostSignerBridge";
 
 import { Capacitor } from "@capacitor/core";
 import { createRoot } from "react-dom/client";
@@ -146,7 +146,7 @@ window.addEventListener("vite:preloadError", (event) => {
 // Service worker: Web Push only — it must NOT cache or serve the app shell
 // (a stale SW-cached shell after a release survives even the one-time
 // chunk-error recovery reload and boots straight into the error screen).
-if ("serviceWorker" in navigator && !isNostrixHosted()) {
+if ("serviceWorker" in navigator && !isNosuHosted()) {
   if (Capacitor.isNativePlatform()) {
     // The APK's WebView resolves SW requests through Capacitor's local server
     // and persists registrations across app updates, so a SW is pure risk

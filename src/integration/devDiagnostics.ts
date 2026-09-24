@@ -35,21 +35,21 @@ export function devDiagnostic(event: string, detail: DiagnosticDetail = {}): voi
     ...detail,
   };
 
-  console.info(`[nostrix groups init] ${event}`, payload);
+  console.info(`[nosu groups init] ${event}`, payload);
 
   // The parent also records the event in its browser console. This contains
   // lifecycle metadata only: never keys, event bodies, or decrypted content.
   const origin = parentOrigin();
   if (origin) {
     window.parent.postMessage(
-      { protocol: "nostrix-groups-v1", type: "diagnostic", payload },
+      { protocol: "nosu-groups-v1", type: "diagnostic", payload },
       origin,
     );
   }
 
   // In development, mirror the same small payload to Vite so the exact boot
   // sequence remains visible in the terminal after a blank iframe load.
-  void fetch("/__nostrix-diagnostics", {
+  void fetch("/__nosu-diagnostics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

@@ -94,10 +94,10 @@ function serveChangelog(): Plugin {
 /** Mirrors safe browser boot diagnostics into the development terminal. */
 function devDiagnostics(): Plugin {
   return {
-    name: "nostrix-dev-diagnostics",
+    name: "nosu-dev-diagnostics",
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (req.method !== "POST" || req.url !== "/__nostrix-diagnostics") return next();
+        if (req.method !== "POST" || req.url !== "/__nosu-diagnostics") return next();
         let body = "";
         req.setEncoding("utf8");
         req.on("data", (chunk: string) => {
@@ -107,9 +107,9 @@ function devDiagnostics(): Plugin {
           try {
             const payload = JSON.parse(body) as { event?: unknown };
             const event = typeof payload.event === "string" ? payload.event : "unknown";
-            console.info(`[nostrix groups client] ${event} ${JSON.stringify(payload)}`);
+            console.info(`[nosu groups client] ${event} ${JSON.stringify(payload)}`);
           } catch (error) {
-            console.warn("[nostrix groups client] invalid diagnostic payload", error);
+            console.warn("[nosu groups client] invalid diagnostic payload", error);
           }
           res.statusCode = 204;
           res.end();

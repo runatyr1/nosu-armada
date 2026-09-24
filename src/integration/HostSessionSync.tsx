@@ -5,12 +5,12 @@ import { useLoginActions } from "@/hooks/useLoginActions";
 
 import {
   getHostSession,
-  isNostrixHosted,
+  isNosuHosted,
   subscribeHostSession,
 } from "./hostSignerBridge";
 import { devDiagnostic } from "./devDiagnostics";
 
-/** Keeps Armada's active extension login aligned with the Nostrix shell. */
+/** Keeps Armada's active extension login aligned with the Nosu shell. */
 export function HostSessionSync(): null {
   const { logins } = useNostrLogin();
   const login = useLoginActions();
@@ -32,7 +32,7 @@ export function HostSessionSync(): null {
   }, [host, logins]);
 
   useEffect(() => {
-    if (!isNostrixHosted() || host.status !== "signed" || !host.pubkey) return;
+    if (!isNosuHosted() || host.status !== "signed" || !host.pubkey) return;
     if (logins[0]?.pubkey === host.pubkey || syncing.current === host.pubkey) return;
 
     syncing.current = host.pubkey;
@@ -43,7 +43,7 @@ export function HostSessionSync(): null {
         errorName: error instanceof Error ? error.name : "Error",
         errorMessage: error instanceof Error ? error.message : String(error),
       });
-      console.error("[nostrix] Could not adopt the host signer", error);
+      console.error("[nosu] Could not adopt the host signer", error);
     });
   }, [host, logins]);
 
