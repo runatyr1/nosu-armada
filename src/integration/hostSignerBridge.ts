@@ -14,6 +14,16 @@ type HostSession = {
   signerKind?: "privatekey" | "nip07" | "nip46";
 };
 
+export type HostTheme = {
+  name: string;
+  mode: "light" | "dark";
+  colors: {
+    background: string;
+    text: string;
+    primary: string;
+  };
+};
+
 type ResponseMessage = {
   protocol: typeof PROTOCOL;
   type: "response";
@@ -23,7 +33,9 @@ type ResponseMessage = {
 };
 
 let currentSession: HostSession = { status: "anonymous" };
+let currentTheme: HostTheme | undefined;
 const listeners = new Set<(session: HostSession) => void>();
+const themeListeners = new Set<() => void>();
 const navigationListeners = new Set<(path: string) => void>();
 let requestedPath: string | undefined;
 type QueuedCall = {
@@ -163,6 +175,33 @@ function safePath(value: unknown): value is string {
   return typeof value === "string" && value.startsWith("/") && !value.startsWith("//") && value.length <= 4096;
 }
 
+function isHexColor(value: unknown): value is string {
+  return typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value);
+}
+
+export function readHostTheme(value: unknown): HostTheme | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const candidate = value as Partial<HostTheme>;
+  const colors = candidate.colors;
+  if (
+    typeof candidate.name !== "string" || candidate.name.length > 64 ||
+    (candidate.mode !== "light" && candidate.mode !== "dark") ||
+    !colors ||
+    !isHexColor(colors.background) ||
+    !isHexColor(colors.text) ||
+    !isHexColor(colors.primary)
+  ) return undefined;
+  return {
+    name: candidate.name,
+    mode: candidate.mode,
+    colors: {
+      background: colors.background,
+      text: colors.text,
+      primary: colors.primary,
+    },
+  };
+}
+
 if (embedded && parentOrigin) {
   let helloTimer: number | undefined;
   let helloAttempts = 0;
@@ -201,6 +240,15 @@ if (embedded && parentOrigin) {
         ...(session.pubkey ? { pubkey: session.pubkey } : {}),
         ...(signerKind ? { signerKind } : {}),
       });
+      return;
+    }
+
+    if (message.type === "theme") {
+      const theme = readHostTheme(message);
+      if (!theme) return;
+      currentTheme = theme;
+      bridgeLog("theme:receive", { name: theme.name, mode: theme.mode });
+      for (const listener of themeListeners) listener();
       return;
     }
 
@@ -275,6 +323,17 @@ export function subscribeHostSession(listener: (session: HostSession) => void): 
   listener(currentSession);
   return () => {
     listeners.delete(listener);
+  };
+}
+
+export function getHostTheme(): HostTheme | undefined {
+  return currentTheme;
+}
+
+export function subscribeHostTheme(listener: () => void): () => void {
+  themeListeners.add(listener);
+  return () => {
+    themeListeners.delete(listener);
   };
 }
 

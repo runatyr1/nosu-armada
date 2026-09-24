@@ -9,7 +9,12 @@ import {
   subscribeActivePubkey,
 } from "@/lib/activeAccount";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { hslStringToHex, isDarkTheme } from "@/lib/colorUtils";
+import { hexToHslString, hslStringToHex, isDarkTheme } from "@/lib/colorUtils";
+import {
+  getHostTheme,
+  subscribeHostTheme,
+  type HostTheme,
+} from "@/integration/hostSignerBridge";
 import { syncNativeStatusBar } from "@/lib/statusBar";
 import {
   buildThemeCssFromCore,
@@ -60,7 +65,14 @@ function deserializeConfig(raw: string): AppConfig {
 }
 
 /** Resolve the active theme's core colors from config. */
-function activeColors(config: AppConfig): CoreThemeColors {
+function activeColors(config: AppConfig, hostTheme?: HostTheme): CoreThemeColors {
+  if (hostTheme) {
+    return {
+      background: hexToHslString(hostTheme.colors.background),
+      text: hexToHslString(hostTheme.colors.text),
+      primary: hexToHslString(hostTheme.colors.primary),
+    };
+  }
   const resolved = resolveTheme(config.theme);
   if (resolved === "custom") {
     return config.customTheme?.colors ?? builtinThemes.dark;
@@ -73,11 +85,11 @@ function activeColors(config: AppConfig): CoreThemeColors {
  * element and set the `<html>` class. Runs before paint to avoid flicker and
  * re-runs on OS scheme changes when theme is "system".
  */
-function useApplyTheme(config: AppConfig) {
+function useApplyTheme(config: AppConfig, hostTheme?: HostTheme) {
   useLayoutEffect(() => {
     const apply = () => {
-      const resolved = resolveTheme(config.theme);
-      const colors = activeColors(config);
+      const resolved = hostTheme ? "custom" : resolveTheme(config.theme);
+      const colors = activeColors(config, hostTheme);
       const css = buildThemeCssFromCore(colors);
 
       let el = document.getElementById("theme-vars") as HTMLStyleElement | null;
@@ -106,12 +118,12 @@ function useApplyTheme(config: AppConfig) {
 
     apply();
 
-    if (config.theme === "system") {
+    if (!hostTheme && config.theme === "system") {
       const mq = window.matchMedia("(prefers-color-scheme: dark)");
       mq.addEventListener("change", apply);
       return () => mq.removeEventListener("change", apply);
     }
-  }, [config]);
+  }, [config, hostTheme]);
 }
 
 interface AppProviderProps {
@@ -145,8 +157,11 @@ export function AppProvider({ storageKey, children }: AppProviderProps) {
     serialize: JSON.stringify,
     deserialize: deserializeConfig,
   });
+  const hostTheme = useSyncExternalStore(subscribeHostTheme, getHostTheme);
 
-  useApplyTheme(config);
+  // The embedded host palette is deliberately ephemeral: Armada's own stored
+  // and NIP-78-synchronized theme remains untouched for standalone use.
+  useApplyTheme(config, hostTheme);
 
   // Ensure first-paint <html> class matches before React hydration completes
   // (the public/theme.js bootstrap handles the very first paint).
