@@ -4,7 +4,7 @@ import { availableParallelism } from "node:os";
 import path from "node:path";
 
 import react from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import { configDefaults } from "vitest/config";
 
 import { manualChunks } from "./src/build/manualChunks";
@@ -91,6 +91,34 @@ function serveChangelog(): Plugin {
   };
 }
 
+/** Mirrors safe browser boot diagnostics into the development terminal. */
+function devDiagnostics(): Plugin {
+  return {
+    name: "nostrix-dev-diagnostics",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.method !== "POST" || req.url !== "/__nostrix-diagnostics") return next();
+        let body = "";
+        req.setEncoding("utf8");
+        req.on("data", (chunk: string) => {
+          if (body.length < 16_384) body += chunk;
+        });
+        req.on("end", () => {
+          try {
+            const payload = JSON.parse(body) as { event?: unknown };
+            const event = typeof payload.event === "string" ? payload.event : "unknown";
+            console.info(`[nostrix groups client] ${event} ${JSON.stringify(payload)}`);
+          } catch (error) {
+            console.warn("[nostrix groups client] invalid diagnostic payload", error);
+          }
+          res.statusCode = 204;
+          res.end();
+        });
+      });
+    },
+  };
+}
+
 /**
  * Stamps each build with a unique id:
  *  - index.html: fills the `<meta name="build">` placeholder so a device's
@@ -107,9 +135,9 @@ function serveChangelog(): Plugin {
  * og:image degrades to the platform's generic placeholder, which is
  * indistinguishable from having no card at all.
  */
-function buildStamp(): Plugin {
+function buildStamp(publicOrigin?: string): Plugin {
   const stamp = new Date().toISOString().slice(0, 19).replace("T", " ") + "Z";
-  const origin = (process.env.VITE_PUBLIC_WEB_ORIGIN || "https://armada.buzz").replace(/\/$/, "");
+  const origin = (publicOrigin || "https://armada.buzz").replace(/\/$/, "");
   return {
     name: "armada-build-stamp",
     transformIndexHtml(html) {
@@ -205,7 +233,10 @@ function testFilesFor(extensions: string) {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, import.meta.dirname, "");
+  return {
+  base: env.VITE_BASE_PATH || "/",
   server: {
     host: "::",
     port: 8080,
@@ -223,7 +254,7 @@ export default defineConfig({
       ignored: BUILD_ARTIFACT_EXCLUDES,
     },
   },
-  plugins: [react(), buildStamp(), serveChangelog()],
+  plugins: [react(), buildStamp(env.VITE_PUBLIC_WEB_ORIGIN), serveChangelog(), devDiagnostics()],
   optimizeDeps: {
     // Pin the dep-scanner's entry points to the real HTML entries. Left to its
     // default the scanner GLOBS `**/*.html` from the project root, and that
@@ -300,4 +331,5 @@ export default defineConfig({
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
+  };
 });

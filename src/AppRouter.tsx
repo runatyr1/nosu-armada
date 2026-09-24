@@ -1,4 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
+import { HostNavigationSync } from "@/integration/HostNavigationSync";
+import { devDiagnostic } from "@/integration/devDiagnostics";
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { useNotificationNavigation } from "@/hooks/useNotificationNavigation";
@@ -203,6 +205,30 @@ function HomeRedirect() {
     }
     return null;
   }, [config.railLayout, liveServers]);
+
+  useEffect(() => {
+    devDiagnostic("router:home-state", {
+      ready: state.ready,
+      hasDeepLink: state.deepLink !== null,
+      hasUser: user !== undefined && user !== null,
+      onboarding,
+      online,
+      meshProbing: mesh.probing,
+      meshAvailable: mesh.available,
+      firstRoute: firstRoute ?? null,
+      dmsDisabled: config.dmsDisabled,
+    });
+  }, [
+    config.dmsDisabled,
+    firstRoute,
+    mesh.available,
+    mesh.probing,
+    onboarding,
+    online,
+    state.deepLink,
+    state.ready,
+    user,
+  ]);
 
   if (!state.ready) {
     // Launch URL not yet known — committing to a default destination here
@@ -542,7 +568,8 @@ export function AppRouter() {
   // `v7_relativeSplatPath` were opt-ins under v6 and are the only behavior v7
   // has.
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "") || undefined}>
+      <HostNavigationSync />
       <NotificationNavigation />
       <SignedInRouterServicesGate />
       <VersionCheck />

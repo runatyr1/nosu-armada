@@ -9,6 +9,11 @@ import {
 
 import type { NostrSigner } from "@nostrify/nostrify";
 
+vi.mock("@/integration/hostSignerBridge", () => ({
+  isNostrixHosted: () => false,
+  getHostSession: () => ({ status: "anonymous" }),
+}));
+
 /** A signer with an AppSigner-style `isDecryptCached` peek. */
 function fakeSigner(cachedCiphertexts: Set<string>): NostrSigner {
   return {

@@ -200,12 +200,13 @@ export function LoginSetup() {
 
   const step = queue[0];
 
-  // Record that a step was surfaced as it renders, so a user who force-quits
-  // mid-flow isn't asked the same thing on every launch.
+  // Record most steps as they render, so a user who force-quits mid-flow isn't
+  // asked the same thing on every launch. Web notifications are different:
+  // rendering the custom step is not proof that the browser permission request
+  // ran, so that marker is written only after either action completes.
   useEffect(() => {
     if (step === "relays" && user?.pubkey) markRelayRecoveryPromptShown(user.pubkey);
     if (step === "notifications") write(NOTIF_PROMPT_KEY, "1");
-    if (step === "webpush") markWebPushPromptShown();
     if (step === "battery") write(BATTERY_PROMPT_KEY, "1");
   }, [step, user?.pubkey]);
 
@@ -228,7 +229,14 @@ export function LoginSetup() {
         />
       )}
       {step === "relays" && <RelayStep onDone={advance} />}
-      {step === "webpush" && <WebPushStep onDone={advance} />}
+      {step === "webpush" && (
+        <WebPushStep
+          onDone={() => {
+            markWebPushPromptShown();
+            advance();
+          }}
+        />
+      )}
       {step === "battery" && <BatteryStep onDone={advance} />}
       {step === "decrypt" && <DecryptStep onDone={advance} />}
     </WizardShell>

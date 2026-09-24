@@ -2,6 +2,8 @@
 // (Android System WebView before Chromium 116). Must precede every other
 // import so the statics exist before any module that reads them evaluates.
 import "./polyfills";
+import { devDiagnostic } from "./integration/devDiagnostics";
+import { isNostrixHosted } from "./integration/hostSignerBridge";
 
 import { Capacitor } from "@capacitor/core";
 import { createRoot } from "react-dom/client";
@@ -79,6 +81,7 @@ if (Capacitor.getPlatform() !== "android" && navigator.storage?.persist) {
 startLoopLagSampler();
 
 perfMark("react render() called");
+devDiagnostic("react:render-called", { rootPresent: document.getElementById("root") !== null });
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
@@ -107,6 +110,26 @@ try {
 // replaced. Everything between this and the first timeline paint is React,
 // storage and crypto — which is the window the profile exists to explain.
 perfMark("react mounted");
+devDiagnostic("react:render-returned");
+requestAnimationFrame(() => {
+  devDiagnostic("react:first-animation-frame", {
+    rootChildren: document.getElementById("root")?.childElementCount ?? -1,
+  });
+  requestAnimationFrame(() => {
+    const root = document.getElementById("root");
+    devDiagnostic("react:second-animation-frame", {
+      rootChildren: root?.childElementCount ?? -1,
+      rootTextLength: root?.textContent?.trim().length ?? -1,
+    });
+  });
+});
+window.setTimeout(() => {
+  const root = document.getElementById("root");
+  devDiagnostic("react:two-second-probe", {
+    rootChildren: root?.childElementCount ?? -1,
+    rootTextLength: root?.textContent?.trim().length ?? -1,
+  });
+}, 2_000);
 
 // The tree mounted without a stale-chunk crash: clear the one-time reload guard
 // so a LATER deploy in this same session can recover again.
@@ -123,7 +146,7 @@ window.addEventListener("vite:preloadError", (event) => {
 // Service worker: Web Push only — it must NOT cache or serve the app shell
 // (a stale SW-cached shell after a release survives even the one-time
 // chunk-error recovery reload and boots straight into the error screen).
-if ("serviceWorker" in navigator) {
+if ("serviceWorker" in navigator && !isNostrixHosted()) {
   if (Capacitor.isNativePlatform()) {
     // The APK's WebView resolves SW requests through Capacitor's local server
     // and persists registrations across app updates, so a SW is pure risk
@@ -151,11 +174,12 @@ if ("serviceWorker" in navigator) {
     // makes the updated push worker available immediately instead of waiting
     // for an edge-cache entry to expire.
     const buildStamp = document.querySelector<HTMLMetaElement>('meta[name="build"]')?.content;
+    const serviceWorkerBase = import.meta.env.BASE_URL;
     const serviceWorkerUrl = buildStamp
-      ? `/sw.js?v=${encodeURIComponent(buildStamp)}`
-      : "/sw.js";
+      ? `${serviceWorkerBase}sw.js?v=${encodeURIComponent(buildStamp)}`
+      : `${serviceWorkerBase}sw.js`;
     navigator.serviceWorker
-      .register(serviceWorkerUrl, { scope: "/", updateViaCache: "none" })
+      .register(serviceWorkerUrl, { scope: serviceWorkerBase, updateViaCache: "none" })
       .catch((err) => {
         console.warn("[sw] registration failed:", err);
       });

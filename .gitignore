@@ -1,11 +1,20 @@
+# Package-manager installs and diagnostics.
 node_modules/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build and test outputs.
 dist/
+coverage/
 .DS_Store
 .eslintcache
 *.local
-.env
+.env*
+!.env.example
 data/
-.tsbuildinfo
+*.tsbuildinfo
 Trace-*.json
 
 # Android signing material — never commit. Injected via CI/CD variables.

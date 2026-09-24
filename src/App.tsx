@@ -27,6 +27,7 @@ import { secureStorage } from "@/lib/secureStorage";
 import { APP_CONFIG_STORAGE_KEY } from "@/lib/activeAccount";
 import { likelySignedIn } from "@/lib/likelySignedIn";
 import { LOGIN_STORAGE_KEY } from "@/lib/switchAccount";
+import { HostSessionSync } from "@/integration/HostSessionSync";
 
 import AppRouter from "./AppRouter";
 
@@ -117,6 +118,7 @@ export function App() {
         <PlausibleProvider>
           <QueryClientProvider client={queryClient}>
             <NostrLoginProvider storageKey={LOGIN_STORAGE_KEY} storage={secureStorage}>
+              <HostSessionSync />
               <ActiveAccountSync />
               {/* The account-exit overlay lives ABOVE the signed-in gate: a
                   logout/switch removes the login moments before it reloads, and

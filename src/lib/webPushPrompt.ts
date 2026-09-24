@@ -24,7 +24,7 @@
  * permission).
  */
 
-/** Set once the opt-in step has been surfaced; a declined step is not re-asked. */
+/** Set once the opt-in step is completed or dismissed; a declined step is not re-asked. */
 const SHOWN_KEY = "armada:webpush-prompt-shown";
 
 type EnableFn = () => Promise<void>;
@@ -76,7 +76,7 @@ function alreadyShown(): boolean {
   }
 }
 
-/** Remember the step was surfaced, so it isn't offered again on later loads. */
+/** Remember the step was completed or dismissed, so it isn't offered again on later loads. */
 export function markWebPushPromptShown(): void {
   try {
     localStorage.setItem(SHOWN_KEY, "1");
