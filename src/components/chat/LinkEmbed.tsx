@@ -16,6 +16,7 @@ import {
   extractYouTubeId,
 } from "@/lib/linkEmbed";
 import { sanitizeImageSrc } from "@/lib/sanitizeUrl";
+import serviceConfig from "@/service-config.json";
 import {
   hasNativeYouTubePlayer,
   needsNativeYouTubePlayer,
@@ -61,7 +62,7 @@ export function LinkEmbed({ url, className }: LinkEmbedProps) {
     return (
       <div className={cn("max-w-md", className)} onClick={(e) => e.stopPropagation()}>
         <iframe
-          src={`https://open.spotify.com/embed/${spotify.type}/${spotify.id}`}
+          src={`${serviceConfig.providers.spotifyEmbed}/${spotify.type}/${spotify.id}`}
           title="Spotify"
           width="100%"
           height={spotify.type === "track" ? 152 : 352}
@@ -85,7 +86,7 @@ export function LinkEmbed({ url, className }: LinkEmbedProps) {
           style={{ paddingBottom: "56.25%" }}
         >
           <iframe
-            src={`https://streamable.com/e/${streamableId}`}
+            src={`${serviceConfig.providers.streamableEmbed}/${streamableId}`}
             title="Streamable video"
             // `allow="fullscreen"` supersedes the `allowFullScreen` attribute
             // (which the browser warns about if both are set), so this is the
@@ -271,7 +272,7 @@ function CopyLinkButton({ url }: { url: string }) {
 const THUMBNAIL_SIZES = ["sddefault", "hqdefault"] as const;
 
 function thumbnailUrl(videoId: string, size: string): string {
-  return `https://i.ytimg.com/vi/${videoId}/${size}.jpg`;
+  return `${serviceConfig.providers.youtubeThumbs}/vi/${videoId}/${size}.jpg`;
 }
 
 /** Probe thumbnail sizes off-screen and resolve with the first valid URL. */
@@ -363,7 +364,7 @@ export function YouTubeEmbed({ videoId, className }: { videoId: string; classNam
       <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
         {activated ? (
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`}
+            src={`${serviceConfig.providers.youtubeNoCookie}/embed/${videoId}?autoplay=1`}
             title="YouTube video"
             // YouTube requires an HTTP Referer (or equivalent app identity).
             // Let the browser send this deployment's own origin so a

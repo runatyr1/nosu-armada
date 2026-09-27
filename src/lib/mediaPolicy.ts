@@ -1,4 +1,5 @@
 import { isLocalNetworkUrl } from "@/lib/sanitizeUrl";
+import serviceConfig from "@/service-config.json";
 
 /**
  * Where a piece of remote media is loaded FROM, decided in one place.
@@ -38,7 +39,7 @@ import { isLocalNetworkUrl } from "@/lib/sanitizeUrl";
  */
 
 /** Ditto's default CORS proxy: a byte-for-byte pass-through with a shared cache. */
-export const DEFAULT_MEDIA_PROXY = "https://proxy.shakespeare.diy/?url={href}";
+export const DEFAULT_MEDIA_PROXY = serviceConfig.servers.mediaProxy;
 
 export interface MediaPolicy {
   /** Proxy URI template (see {@link normalizeMediaProxy}); empty = no proxy. */

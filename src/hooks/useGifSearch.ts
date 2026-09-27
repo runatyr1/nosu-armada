@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import serviceConfig from "@/service-config.json";
 
 const RESULTS_LIMIT = 30;
 
@@ -40,8 +41,8 @@ function klipyConfigured(): boolean {
 // GIFverse provider (default, keyless)
 // ---------------------------------------------------------------------------
 
-const GIFVERSE_BASE_URL = 'https://gifverse.net/api/v1';
-const GIFVERSE_MEDIA_URL = 'https://gifverse.net/media';
+const GIFVERSE_BASE_URL = serviceConfig.providers.gifverseApi;
+const GIFVERSE_MEDIA_URL = serviceConfig.providers.gifverseMedia;
 
 interface GifverseResult {
   /** GIF id */
@@ -131,7 +132,7 @@ async function fetchGifverse(path: 'search' | 'trending', query?: string): Promi
 // KLIPY provider (opt-in via VITE_KLIPY_API_KEY)
 // ---------------------------------------------------------------------------
 
-const KLIPY_BASE_URL = 'https://api.klipy.com/api/v1';
+const KLIPY_BASE_URL = serviceConfig.providers.klipyApi;
 const KLIPY_CUSTOMER_ID_KEY = 'armada:klipy-customer-id';
 
 interface KlipyMediaFile {

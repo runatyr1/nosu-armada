@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { getBackgroundThemeMode } from "@/lib/colorUtils";
 import { cn } from "@/lib/utils";
+import serviceConfig from "@/service-config.json";
 
 interface TweetEmbedProps {
   tweetId: string;
@@ -35,7 +36,7 @@ export function TweetEmbed({ tweetId, className }: TweetEmbedProps) {
 
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
-      if (e.origin !== "https://platform.twitter.com") return;
+      if (e.origin !== serviceConfig.providers.twitterOrigin) return;
       if (!iframeRef.current || e.source !== iframeRef.current.contentWindow) return;
 
       const wrapper = (e.data as Record<string, unknown> | undefined)?.["twttr.embed"] as
@@ -62,7 +63,7 @@ export function TweetEmbed({ tweetId, className }: TweetEmbedProps) {
     >
       <iframe
         ref={iframeRef}
-        src={`https://platform.twitter.com/embed/Tweet.html?${params}`}
+        src={`${serviceConfig.providers.twitterOrigin}/embed/Tweet.html?${params}`}
         title="Tweet"
         className="w-full border-0"
         style={{ minHeight: 250 }}

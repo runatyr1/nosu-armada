@@ -7,6 +7,8 @@
  * family the other can render.
  */
 
+import serviceConfig from "@/service-config.json";
+
 export type ThemeFontCategory = "sans" | "serif" | "mono" | "display" | "handwriting";
 
 export interface ThemeFontOption {
@@ -20,8 +22,8 @@ export interface ThemeFontOption {
 
 const cdn = (pkg: string, variable: boolean) =>
   variable
-    ? `https://cdn.jsdelivr.net/fontsource/fonts/${pkg}:vf@latest/latin-wght-normal.woff2`
-    : `https://cdn.jsdelivr.net/fontsource/fonts/${pkg}@latest/latin-400-normal.woff2`;
+    ? `${serviceConfig.providers.fontCdn}/${pkg}:vf@latest/latin-wght-normal.woff2`
+    : `${serviceConfig.providers.fontCdn}/${pkg}@latest/latin-400-normal.woff2`;
 
 export const themeFontOptions: ThemeFontOption[] = [
   { family: "Inter", cdnUrl: cdn("inter", true), category: "sans" },

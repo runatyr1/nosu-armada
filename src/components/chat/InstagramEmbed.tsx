@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
+import serviceConfig from "@/service-config.json";
 
 interface InstagramEmbedProps {
   shortcode: string;
@@ -30,7 +31,7 @@ export function InstagramEmbed({ shortcode, className }: InstagramEmbedProps) {
 
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
-      if (e.origin !== "https://www.instagram.com") return;
+      if (e.origin !== serviceConfig.providers.instagramOrigin) return;
       if (!iframeRef.current || e.source !== iframeRef.current.contentWindow) return;
 
       let data: unknown = e.data;
@@ -62,7 +63,7 @@ export function InstagramEmbed({ shortcode, className }: InstagramEmbedProps) {
     >
       <iframe
         ref={iframeRef}
-        src={`https://www.instagram.com/p/${shortcode}/embed/captioned/`}
+        src={`${serviceConfig.providers.instagramOrigin}/p/${shortcode}/embed/captioned/`}
         title="Instagram post"
         className="w-full border-0 bg-white"
         style={{ height: height ?? undefined, minHeight: 480 }}

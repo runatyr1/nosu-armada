@@ -2,8 +2,9 @@ import { nip19 } from "nostr-tools";
 
 import type { GitTicket } from "@/lib/gitActivity";
 import { normalizeRelayUrl } from "@/lib/platform";
+import serviceConfig from "@/service-config.json";
 
-const GITWORKSHOP_ORIGIN = "https://gitworkshop.dev";
+const GITWORKSHOP_ORIGIN = serviceConfig.providers.gitworkshopOrigin;
 
 /**
  * Encode one normalized relay URL as one GitWorkshop route segment.

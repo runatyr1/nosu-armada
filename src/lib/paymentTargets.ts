@@ -24,6 +24,7 @@ import type { NostrEvent } from '@nostrify/nostrify';
 
 import { validateBitcoinAddress } from '@/lib/bitcoinAddress';
 import { isSilentPaymentAddress, validateSilentPaymentAddress } from '@/lib/silentPaymentsCore';
+import serviceConfig from '@/service-config.json';
 
 /** Replaceable kind for NIP-A3 payment targets. */
 export const PAYMENT_TARGETS_KIND = 10133;
@@ -193,7 +194,7 @@ export const PAYMENT_METHODS: Record<PaymentTargetType, PaymentMethodDef> = {
     kind: 'generic',
     validate: isHandle,
     // Cash App $cashtags resolve at cash.app/$handle — no native scheme.
-    uri: (a) => `https://cash.app/$${a.trim().replace(/^\$/, '')}`,
+    uri: (a) => `${serviceConfig.providers.cashApp}/$${a.trim().replace(/^\$/, '')}`,
     placeholder: '$cashtag',
   },
   venmo: {
@@ -203,7 +204,7 @@ export const PAYMENT_METHODS: Record<PaymentTargetType, PaymentMethodDef> = {
     symbol: '$',
     kind: 'generic',
     validate: isHandle,
-    uri: (a) => `https://venmo.com/u/${a.trim().replace(/^@/, '')}`,
+    uri: (a) => `${serviceConfig.providers.venmo}/${a.trim().replace(/^@/, '')}`,
     placeholder: '@username',
   },
   revolut: {
@@ -213,7 +214,7 @@ export const PAYMENT_METHODS: Record<PaymentTargetType, PaymentMethodDef> = {
     symbol: '£',
     kind: 'generic',
     validate: isHandle,
-    uri: (a) => `https://revolut.me/${a.trim().replace(/^@/, '')}`,
+    uri: (a) => `${serviceConfig.providers.revolut}/${a.trim().replace(/^@/, '')}`,
     placeholder: 'username',
   },
 };

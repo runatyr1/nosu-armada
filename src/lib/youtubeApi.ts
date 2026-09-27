@@ -7,6 +7,8 @@
  * when `window.YT.Player` is available.
  */
 
+import serviceConfig from "@/service-config.json";
+
 export interface YTPlayer {
   playVideo: () => void;
   pauseVideo: () => void;
@@ -70,9 +72,9 @@ export function loadYouTubeApi(): Promise<YTNamespace> {
       prev?.();
       if (window.YT) resolve(window.YT);
     };
-    if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+    if (!document.querySelector(`script[src="${serviceConfig.providers.youtubeIframeApi}"]`)) {
       const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
+      tag.src = serviceConfig.providers.youtubeIframeApi;
       document.head.appendChild(tag);
     }
   });

@@ -10,6 +10,8 @@
  * that aren't files at all.
  */
 
+import serviceConfig from "@/service-config.json";
+
 /** Operating systems the page can recognize and offer something for. */
 export type DownloadOs = "linux" | "windows" | "macos" | "android" | "ios";
 
@@ -68,7 +70,7 @@ export function isRepublishedPackage(filename: string): boolean {
  * and re-signs the repositories with its own keys — so a package manager pointed
  * at it trusts this instance, which in turn trusts the release event's hash.
  */
-export const NPKG_HOST = "pkg.soapbox.pub";
+export const NPKG_HOST = serviceConfig.servers.npkgHost;
 
 /**
  * A package repository pkg.soapbox.pub serves, and the commands that add it and
@@ -132,7 +134,7 @@ export const ANDROID_STORES: AppStore[] = [
   {
     label: "Google Play",
     hint: "Install from the Play Store",
-    url: "https://play.google.com/store/apps/details?id=buzz.armada.app&hl=en-US",
+    url: serviceConfig.providers.androidPlayStore,
     icon: "/stores/google-play.svg",
   },
   {
@@ -146,7 +148,7 @@ export const ANDROID_STORES: AppStore[] = [
   {
     label: "Zapstore",
     hint: "The Nostr-native app store",
-    url: "https://zapstore.dev/apps/buzz.armada.app",
+    url: serviceConfig.providers.zapstore,
     icon: "/stores/zapstore.png",
   },
 ];

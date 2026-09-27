@@ -96,12 +96,7 @@ const KIND_REACTION = 7;
 const VSK_INVITE_LIVE = "6";
 const VSK_INVITE_REVOKED = "9";
 
-const RELAY_DICTIONARY = {
-  1: "wss://jskitty.com/nostr",
-  2: "wss://asia.vectorapp.io/nostr",
-  3: "wss://relay.ditto.pub",
-  4: "wss://relay.dreamith.to",
-};
+const RELAY_DICTIONARY = JSON.parse(readFileSync(new URL('../src/service-config.json', import.meta.url), 'utf8')).relays.stockConcordDictionary;
 const STOCK_RELAYS = Object.values(RELAY_DICTIONARY);
 
 function buildInfo(label, id32, epoch) {

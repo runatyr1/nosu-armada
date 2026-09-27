@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useEventStore } from "@/hooks/useEventStore";
 import { tryNpubEncode } from "@/lib/safeNip19";
+import serviceConfig from "@/service-config.json";
 
 import type { NostrRumor } from "@/lib/nostrRumor";
 
@@ -18,7 +19,7 @@ const NSITE_ROOT_KIND = 15128;
  * `https://<npub>.<gateway>`). Runtime-configurable like every other endpoint
  * (see platform.ts); the default is the same gateway Ditto links to.
  */
-const NSITE_GATEWAY: string = import.meta.env.VITE_NSITE_GATEWAY || "nsite.lol";
+const NSITE_GATEWAY: string = import.meta.env.VITE_NSITE_GATEWAY || serviceConfig.servers.nsiteGateway;
 
 export interface NsiteResult {
   /** The gateway URL of the person's root site. */

@@ -11,6 +11,7 @@
 
 import { Capacitor } from "@capacitor/core";
 import { nip19 } from "nostr-tools";
+import serviceConfig from "../service-config.json";
 
 /**
  * True only inside the Capacitor native runtime (the APK or the iOS app), not
@@ -138,7 +139,7 @@ export function isStandalonePwa(): boolean {
  *
  * These seed `AppConfig.appRelays`, which the user can edit in Settings.
  */
-export const APP_RELAYS: string[] = (import.meta.env.VITE_APP_RELAYS || "wss://relay.ditto.pub,wss://relay.dreamith.to")
+export const APP_RELAYS: string[] = (import.meta.env.VITE_APP_RELAYS || serviceConfig.relays.app.join(","))
   .split(",")
   .map((url: string) => normalizeRelayUrl(url))
   .filter((url: string | undefined): url is string => Boolean(url));
@@ -162,7 +163,7 @@ export const APP_RELAYS: string[] = (import.meta.env.VITE_APP_RELAYS || "wss://r
  * Seeds `AppConfig.broadcastRelays`, which the user can edit in Settings.
  */
 export const BROADCAST_RELAYS: string[] = (
-  import.meta.env.VITE_BROADCAST_RELAYS ?? "wss://relay.primal.net"
+  import.meta.env.VITE_BROADCAST_RELAYS ?? serviceConfig.relays.broadcast.join(",")
 )
   .split(",")
   .map((url: string) => normalizeRelayUrl(url))
@@ -176,7 +177,7 @@ export const BROADCAST_RELAYS: string[] = (
  */
 export const RELAY_LIST_DISCOVERY_RELAYS: string[] = (
   import.meta.env.VITE_NIP65_DISCOVERY_RELAYS
-  ?? "wss://purplepag.es,wss://user.kindpag.es,wss://relay.nos.social"
+  ?? serviceConfig.relays.nip65Discovery.join(",")
 )
   .split(",")
   .map((url: string) => normalizeRelayUrl(url))
@@ -187,7 +188,7 @@ export const RELAY_LIST_DISCOVERY_RELAYS: string[] = (
  * user-editable here). NIP-50 search queries (`search` filters) route here
  * instead of fanning out to every server. Seeds `AppConfig.searchRelays`.
  */
-export const SEARCH_RELAYS: string[] = (import.meta.env.VITE_SEARCH_RELAYS || "wss://relay.ditto.pub,wss://relay.dreamith.to")
+export const SEARCH_RELAYS: string[] = (import.meta.env.VITE_SEARCH_RELAYS || serviceConfig.relays.search.join(","))
   .split(",")
   .map((url: string) => normalizeRelayUrl(url))
   .filter((url: string | undefined): url is string => Boolean(url));
@@ -201,7 +202,7 @@ export const SEARCH_RELAYS: string[] = (import.meta.env.VITE_SEARCH_RELAYS || "w
  * disable directory search (pasted addresses still resolve from their hints).
  */
 export const GIT_ANNOUNCEMENT_DISCOVERY_RELAY: string =
-  normalizeRelayUrl(import.meta.env.VITE_GIT_DISCOVERY_RELAY ?? "wss://index.ngit.dev") ?? "";
+  normalizeRelayUrl(import.meta.env.VITE_GIT_DISCOVERY_RELAY ?? serviceConfig.relays.gitDiscovery) ?? "";
 
 /** Whether a relay is the discovery index, compared as normalized URLs rather than by substring. */
 export function isGitAnnouncementDiscoveryRelay(url: string): boolean {
@@ -219,7 +220,7 @@ export function isGitAnnouncementDiscoveryRelay(url: string): boolean {
  * `VITE_CONCORD_AV_SERVERS` (comma-separated https origins) or set it empty to
  * disable Concord voice.
  */
-const DEFAULT_PUBLIC_AV_SERVER = "https://armada.buzz";
+const DEFAULT_PUBLIC_AV_SERVER = serviceConfig.servers.concordAv.join(",");
 export const CONCORD_AV_SERVERS: string[] = (
   import.meta.env.VITE_CONCORD_AV_SERVERS ?? DEFAULT_PUBLIC_AV_SERVER
 )
@@ -239,7 +240,7 @@ export const CONCORD_AV_SERVERS: string[] = (
  * `CONCORD_AV_SERVERS`); operators can override with
  * `VITE_DM_RELAYS` (comma-separated ws/wss) or set it empty to disable.
  */
-const DEFAULT_PUBLIC_DM_RELAY = "wss://relay.armada.buzz";
+const DEFAULT_PUBLIC_DM_RELAY = serviceConfig.relays.dm.join(",");
 export const DM_RELAYS: string[] = (import.meta.env.VITE_DM_RELAYS ?? DEFAULT_PUBLIC_DM_RELAY)
   .split(",")
   .map((url: string) => normalizeRelayUrl(url))
@@ -303,7 +304,7 @@ export const DEFAULT_RNNOISE: boolean = envBool(import.meta.env.VITE_DEFAULT_RNN
  * app's files from memory (see `SandboxFrame`). The public `iframe.diy` service
  * provides this; operators may self-host an equivalent and override here.
  */
-export const SANDBOX_DOMAIN: string = import.meta.env.VITE_SANDBOX_DOMAIN || "iframe.diy";
+export const SANDBOX_DOMAIN: string = import.meta.env.VITE_SANDBOX_DOMAIN || serviceConfig.servers.sandboxDomain;
 
 /**
  * Generic link-preview (OEmbed) proxy, for URLs whose host has no native OEmbed
@@ -323,7 +324,7 @@ export const SANDBOX_DOMAIN: string = import.meta.env.VITE_SANDBOX_DOMAIN || "if
  * `https://example.com/oembed?url=` work as written.
  */
 export const LINK_PREVIEW_ENDPOINT: string = (
-  import.meta.env.VITE_LINK_PREVIEW_ENDPOINT ?? "https://ditto.pub/api/link-preview/{url}"
+  import.meta.env.VITE_LINK_PREVIEW_ENDPOINT ?? serviceConfig.servers.linkPreview
 ).trim();
 
 /** Build the proxy request URL for a link preview, or null if no proxy is configured. */

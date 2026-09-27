@@ -7,6 +7,7 @@
  * (an exact printing) or, failing that, an exact card name. See
  * https://scryfall.com/docs/api for the full API.
  */
+import serviceConfig from "@/service-config.json";
 
 /** Version of image to request from the `format=image` Scryfall endpoint. */
 export type ScryfallImageVersion = "small" | "normal" | "large" | "png" | "art_crop" | "border_crop";
@@ -27,7 +28,7 @@ export interface CardRef {
  */
 export function scryfallImageUrl(card: CardRef, version: ScryfallImageVersion = "normal"): string {
   if (card.setId && card.artId) {
-    return `https://api.scryfall.com/cards/${encodeURIComponent(card.setId.toLowerCase())}/${encodeURIComponent(card.artId)}?format=image&version=${version}`;
+    return `${serviceConfig.providers.scryfallApi}/${encodeURIComponent(card.setId.toLowerCase())}/${encodeURIComponent(card.artId)}?format=image&version=${version}`;
   }
-  return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(card.name ?? "")}&format=image&version=${version}`;
+  return `${serviceConfig.providers.scryfallApi}/named?exact=${encodeURIComponent(card.name ?? "")}&format=image&version=${version}`;
 }

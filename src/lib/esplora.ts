@@ -45,11 +45,9 @@ const MAX_COOLDOWN_MS = 300_000;
  * reference Esplora implementation. The mempool mirrors are listed first so
  * the `/v1/prices` extension is available without the soft-failover hop.
  */
-export const DEFAULT_ESPLORA_APIS: readonly string[] = [
-  'https://mempool.space/api',
-  'https://mempool.emzy.de/api',
-  'https://blockstream.info/api',
-];
+import serviceConfig from "@/service-config.json";
+
+export const DEFAULT_ESPLORA_APIS: readonly string[] = serviceConfig.servers.esplora;
 
 /**
  * Default per-attempt timeout. Chosen to catch shadowban-style hangs

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import serviceConfig from "@/service-config.json";
 
 /**
  * Fetch a YouTube video's title (and channel) via the keyless oEmbed endpoint —
@@ -14,9 +15,9 @@ export function useYouTubeTitle(videoId: string | undefined) {
     gcTime: 1000 * 60 * 60 * 24,
     retry: false,
     queryFn: async ({ signal }) => {
-      const url = `https://www.youtube.com/watch?v=${videoId}`;
+      const url = `${serviceConfig.providers.youtubeWatch}?v=${videoId}`;
       const res = await fetch(
-        `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`,
+        `${serviceConfig.providers.youtubeOembed}?url=${encodeURIComponent(url)}&format=json`,
         { signal, headers: { Accept: "application/json" } },
       );
       if (!res.ok) return null;

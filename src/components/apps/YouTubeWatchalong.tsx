@@ -18,6 +18,7 @@ import {
   openYouTubeTargetPage,
 } from "@/lib/nativeYouTube";
 import { loadYouTubeApi, YT_STATE, type YTPlayer } from "@/lib/youtubeApi";
+import serviceConfig from "@/service-config.json";
 import { cn } from "@/lib/utils";
 
 /** One entry in the shared watch queue. */
@@ -153,7 +154,7 @@ export function YouTubeWatchalong({ sync }: { sync: AppSync }) {
       if (destroyed || !containerRef.current) return;
       player = new YT.Player(containerRef.current, {
         videoId: entry.videoId,
-        host: "https://www.youtube-nocookie.com",
+        host: serviceConfig.providers.youtubeNoCookie,
         playerVars: {
           autoplay: 1,
           rel: 0,

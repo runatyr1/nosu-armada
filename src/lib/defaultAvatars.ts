@@ -73,7 +73,9 @@ export interface DefaultAvatar {
   label: string;
 }
 
-const BLOSSOM = "https://blossom.ditto.pub";
+import serviceConfig from "@/service-config.json";
+
+const BLOSSOM = serviceConfig.servers.blossom[0].replace(/\/$/, "");
 
 export const DEFAULT_AVATARS: readonly DefaultAvatar[] = [
   {

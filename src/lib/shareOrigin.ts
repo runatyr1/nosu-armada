@@ -22,10 +22,11 @@
 import { Capacitor } from "@capacitor/core";
 
 import { isDesktop } from "@/lib/desktop";
+import serviceConfig from "@/service-config.json";
 
 /** The hosted web client's origin, used as the base for native-built links. */
 export const PUBLIC_WEB_ORIGIN: string =
-  import.meta.env.VITE_PUBLIC_WEB_ORIGIN || "https://armada.buzz";
+  import.meta.env.VITE_PUBLIC_WEB_ORIGIN || serviceConfig.servers.publicWebOrigin;
 
 /**
  * The origin to build shareable links on: the page's own origin on the web,

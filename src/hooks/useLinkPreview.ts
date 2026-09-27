@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { linkPreviewUrl } from "@/lib/platform";
+import serviceConfig from "@/service-config.json";
 
 /** Zod schema for OEmbed responses from the link preview endpoint. */
 const OEmbedSchema = z.object({
@@ -35,21 +36,21 @@ async function tryNativeOEmbed(url: string, signal?: AbortSignal): Promise<OEmbe
 
     if (host === "youtube.com" || host === "youtu.be") {
       return await tryFetchOEmbed(
-        `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`,
+        `${serviceConfig.providers.youtubeOembed}?url=${encodeURIComponent(url)}&format=json`,
         signal,
       );
     }
 
     if (host === "open.spotify.com") {
       return await tryFetchOEmbed(
-        `https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`,
+        `${serviceConfig.providers.spotifyOembed}?url=${encodeURIComponent(url)}`,
         signal,
       );
     }
 
     if (host === "reddit.com" || host === "old.reddit.com" || host === "new.reddit.com") {
       return await tryFetchOEmbed(
-        `https://www.reddit.com/oembed?url=${encodeURIComponent(url)}`,
+        `${serviceConfig.providers.redditOembed}?url=${encodeURIComponent(url)}`,
         signal,
       );
     }

@@ -280,7 +280,7 @@ export function WalletSettings() {
             <Input
               value={newEsplora}
               onChange={(e) => setNewEsplora(e.target.value)}
-              placeholder="https://mempool.space/api"
+              placeholder={DEFAULT_ESPLORA_APIS[0]}
               className="flex-1"
             />
             <Button variant="outline" size="sm" onClick={handleAddEsplora} disabled={!newEsplora.trim()}>

@@ -21,10 +21,11 @@
  * can simply skip the link rather than crash the render tree.
  */
 import { tryNaddrEncode, tryNeventEncode, tryNpubEncode } from "@/lib/safeNip19";
+import serviceConfig from "@/service-config.json";
 
 import type { NostrRumor } from "@/lib/nostrRumor";
 
-const DITTO_ORIGIN = "https://ditto.pub";
+const DITTO_ORIGIN = serviceConfig.providers.dittoOrigin;
 
 /**
  * Off-ramp URL for a rendered event. Addressable events encode to an

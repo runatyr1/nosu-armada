@@ -1,4 +1,5 @@
 import { isLocalNetworkUrl, sanitizeUrl } from "@/lib/sanitizeUrl";
+import serviceConfig from "@/service-config.json";
 
 import type { NostrRumor } from "@/lib/nostrRumor";
 
@@ -15,8 +16,7 @@ import type { NostrRumor } from "@/lib/nostrRumor";
  * at whatever the operator chooses. Falls back to the public Armada/Ditto
  * media servers when unset or empty.
  */
-const DEFAULT_APP_BLOSSOM_SERVERS =
-  "https://blossom.ditto.pub/,https://blossom.dreamith.to/,https://blossom.primal.net/";
+const DEFAULT_APP_BLOSSOM_SERVERS = serviceConfig.servers.blossom.join(",");
 
 export const APP_BLOSSOM_SERVERS: string[] = (
   import.meta.env.VITE_APP_BLOSSOM_SERVERS || DEFAULT_APP_BLOSSOM_SERVERS

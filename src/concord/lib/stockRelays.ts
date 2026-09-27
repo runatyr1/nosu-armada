@@ -13,12 +13,9 @@
  * referenced by a single byte. Versioned — it grows without breaking older
  * links; both Vector and Soapbox ship it identically.
  */
-export const RELAY_DICTIONARY: Record<number, string> = {
-  1: "wss://jskitty.com/nostr",
-  2: "wss://asia.vectorapp.io/nostr",
-  3: "wss://relay.ditto.pub",
-  4: "wss://relay.dreamith.to",
-};
+import serviceConfig from "@/service-config.json";
+
+export const RELAY_DICTIONARY: Record<number, string> = serviceConfig.relays.stockConcordDictionary;
 
 /** The stock set selected by the flags bit (dictionary ids 1–4, in order). */
 export const STOCK_RELAYS: string[] = [1, 2, 3, 4].map((i) => RELAY_DICTIONARY[i]);

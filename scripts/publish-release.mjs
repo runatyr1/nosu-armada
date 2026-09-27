@@ -87,7 +87,8 @@ const MIRROR_BUDGET_MS = 5 * 60_000;
 /** sha256("") — well-formed, and no server stores an empty blob under it. */
 const PROBE_HASH = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 
-const DEFAULT_BLOSSOM = 'https://blossom.ditto.pub';
+const serviceConfig = JSON.parse(readFileSync(new URL('../src/service-config.json', import.meta.url), 'utf8'));
+const DEFAULT_BLOSSOM = serviceConfig.servers.blossom[0];
 
 /** The servers every nsite deploy uses, so the release artifacts live beside the site. */
 function configuredServers() {
@@ -113,11 +114,7 @@ function configuredServers() {
  * event`. Adding the `a` tag back to satisfy one relay would reintroduce the
  * ambiguity `D` exists to remove; the release simply lives elsewhere.
  */
-const DEFAULT_RELAYS = [
-  'wss://relay.ditto.pub',
-  'wss://relay.dreamith.to',
-  'wss://relay.primal.net',
-];
+const DEFAULT_RELAYS = serviceConfig.relays.release;
 
 /**
  * How a built file is described on the wire.

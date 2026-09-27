@@ -8,6 +8,7 @@
 
 import type { DownloadOs } from "./downloads";
 import { normalizeRelayUrl } from "./platform";
+import serviceConfig from "../service-config.json";
 
 /** See docs/releases.md. */
 export const RELEASE_KIND = 30622;
@@ -36,7 +37,7 @@ export const RELEASE_KIND = 30622;
  */
 export const RELEASE_RELAYS: string[] = (
   import.meta.env.VITE_RELEASE_RELAYS ??
-  "wss://relay.ditto.pub,wss://relay.dreamith.to,wss://relay.primal.net"
+  serviceConfig.relays.release.join(",")
 )
   .split(",")
   .map((url: string) => normalizeRelayUrl(url))

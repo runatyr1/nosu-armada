@@ -1,4 +1,5 @@
 import { fillUriTemplate } from "@/lib/uriTemplate";
+import serviceConfig from "@/service-config.json";
 
 /**
  * The favicon service, as a URI template. Ditto's default, and deliberately
@@ -8,7 +9,7 @@ import { fillUriTemplate } from "@/lib/uriTemplate";
  * reader to each of them. Point it at `{origin}/favicon.ico` to opt back into
  * contacting hosts directly.
  */
-export const FAVICON_URL_TEMPLATE = "https://ditto.pub/api/favicon/{hostname}";
+export const FAVICON_URL_TEMPLATE = serviceConfig.providers.favicon;
 
 export interface TemplateUrlOpts {
   template: string;

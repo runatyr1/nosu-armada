@@ -1,0 +1,55 @@
+{
+  "relays": {
+    "app": ["wss://relay.ditto.pub", "wss://relay.dreamith.to"],
+    "broadcast": ["wss://relay.primal.net"],
+    "nip65Discovery": ["wss://purplepag.es", "wss://user.kindpag.es", "wss://relay.nos.social"],
+    "search": ["wss://relay.ditto.pub", "wss://relay.dreamith.to"],
+    "gitDiscovery": "wss://index.ngit.dev",
+    "dm": ["wss://relay.armada.buzz"],
+    "release": ["wss://relay.ditto.pub", "wss://relay.dreamith.to", "wss://relay.primal.net"],
+    "stockConcordDictionary": {
+      "1": "wss://jskitty.com/nostr",
+      "2": "wss://asia.vectorapp.io/nostr",
+      "3": "wss://relay.ditto.pub",
+      "4": "wss://relay.dreamith.to"
+    }
+  },
+  "servers": {
+    "concordAv": ["https://armada.buzz"],
+    "blossom": ["https://blossom.ditto.pub/", "https://blossom.dreamith.to/", "https://blossom.primal.net/"],
+    "esplora": ["https://mempool.space/api", "https://mempool.emzy.de/api", "https://blockstream.info/api"],
+    "mediaProxy": "https://proxy.shakespeare.diy/?url={href}",
+    "linkPreview": "https://ditto.pub/api/link-preview/{url}",
+    "publicWebOrigin": "https://armada.buzz",
+    "nsiteGateway": "nsite.lol",
+    "sandboxDomain": "iframe.diy",
+    "npkgHost": "pkg.soapbox.pub"
+  },
+  "providers": {
+    "dittoOrigin": "https://ditto.pub",
+    "favicon": "https://ditto.pub/api/favicon/{hostname}",
+    "gitworkshopOrigin": "https://gitworkshop.dev",
+    "gifverseApi": "https://gifverse.net/api/v1",
+    "gifverseMedia": "https://gifverse.net/media",
+    "klipyApi": "https://api.klipy.com/api/v1",
+    "scryfallApi": "https://api.scryfall.com/cards",
+    "youtubeOembed": "https://www.youtube.com/oembed",
+    "spotifyOembed": "https://open.spotify.com/oembed",
+    "redditOembed": "https://www.reddit.com/oembed",
+    "youtubeWatch": "https://www.youtube.com/watch",
+    "youtubePlaylist": "https://www.youtube.com/playlist",
+    "youtubeIframeApi": "https://www.youtube.com/iframe_api",
+    "youtubeNoCookie": "https://www.youtube-nocookie.com",
+    "youtubeThumbs": "https://i.ytimg.com",
+    "spotifyEmbed": "https://open.spotify.com/embed",
+    "streamableEmbed": "https://streamable.com/e",
+    "instagramOrigin": "https://www.instagram.com",
+    "twitterOrigin": "https://platform.twitter.com",
+    "fontCdn": "https://cdn.jsdelivr.net/fontsource/fonts",
+    "cashApp": "https://cash.app",
+    "venmo": "https://venmo.com/u",
+    "revolut": "https://revolut.me",
+    "androidPlayStore": "https://play.google.com/store/apps/details?id=buzz.armada.app&hl=en-US",
+    "zapstore": "https://zapstore.dev/apps/buzz.armada.app"
+  }
+}

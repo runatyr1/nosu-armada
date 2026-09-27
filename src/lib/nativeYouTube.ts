@@ -1,4 +1,5 @@
 import { Capacitor, registerPlugin } from "@capacitor/core";
+import serviceConfig from "@/service-config.json";
 
 /** iOS-only bridge to the referrer-bearing native YouTube player. */
 interface ArmadaYouTubePlugin {
@@ -55,7 +56,7 @@ export function openYouTubeTargetPage(target: NativeYouTubeTarget): boolean {
   }
   if (!target.videoId && !target.playlistId) return false;
 
-  const url = new URL(target.videoId ? "https://www.youtube.com/watch" : "https://www.youtube.com/playlist");
+  const url = new URL(target.videoId ? serviceConfig.providers.youtubeWatch : serviceConfig.providers.youtubePlaylist);
   if (target.videoId) url.searchParams.set("v", target.videoId);
   if (target.playlistId) url.searchParams.set("list", target.playlistId);
   if (Number.isFinite(target.startSeconds) && (target.startSeconds ?? 0) >= 1) {
