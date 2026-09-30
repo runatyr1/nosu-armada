@@ -220,6 +220,8 @@ export interface AppConfig {
    * `useOwnDmRelays` is on. Empty by default.
    */
   dmRelays: string[];
+  /** Runtime-only DM routing chosen by the Nosu host. Never persisted or published. */
+  hostDmRelays?: string[];
   /**
    * The user's personal Blossom file server list (BUD-03), mirroring Ditto's
    * blossomServerMetadata. `servers` is synced bidirectionally with the
@@ -687,6 +689,7 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
  * and push work over the shared app relays without touching anyone's 10050.
  */
 export function effectiveDmRelays(config: AppConfig): string[] {
+  if (config.hostDmRelays) return config.hostDmRelays;
   const out = new Set<string>();
   if (config.useAppDmRelays) {
     for (const url of config.appRelays) out.add(url);

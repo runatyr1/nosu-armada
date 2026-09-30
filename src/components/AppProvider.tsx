@@ -11,7 +11,10 @@ import {
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { hexToHslString, hslStringToHex, isDarkTheme } from "@/lib/colorUtils";
 import {
+  getHostDmRelays,
   getHostTheme,
+  isNosuHosted,
+  subscribeHostDmRelays,
   subscribeHostTheme,
   type HostTheme,
 } from "@/integration/hostSignerBridge";
@@ -158,6 +161,13 @@ export function AppProvider({ storageKey, children }: AppProviderProps) {
     deserialize: deserializeConfig,
   });
   const hostTheme = useSyncExternalStore(subscribeHostTheme, getHostTheme);
+  const hostDmRelays = useSyncExternalStore(subscribeHostDmRelays, getHostDmRelays);
+  const activeConfig = useMemo(
+    () => isNosuHosted()
+      ? { ...config, hostDmRelays: hostDmRelays?.pubkey === pubkey ? hostDmRelays.relays : [] }
+      : config,
+    [config, hostDmRelays, pubkey],
+  );
 
   // The embedded host palette is deliberately ephemeral: Armada's own stored
   // and NIP-78-synchronized theme remains untouched for standalone use.
@@ -178,8 +188,8 @@ export function AppProvider({ storageKey, children }: AppProviderProps) {
   // an invalidation here re-rendered it too, and its own value then reached the
   // ~96 files that call `useNostr()`.
   const value = useMemo(
-    () => ({ config, updateConfig: setConfig }),
-    [config, setConfig],
+    () => ({ config: activeConfig, updateConfig: setConfig }),
+    [activeConfig, setConfig],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

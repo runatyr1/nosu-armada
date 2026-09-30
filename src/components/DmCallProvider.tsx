@@ -140,9 +140,9 @@ export function DmCallProvider({ children }: { children: React.ReactNode }) {
   // own `#p` to the public stock relays.
   const scanRelays = useMemo(() => {
     if (myRelays.length === 0) return [];
-    const stockFloor = !config.useAppDmRelays && publishedRelays.length === 0 ? STOCK_RELAYS : [];
+    const stockFloor = config.hostDmRelays === undefined && !config.useAppDmRelays && publishedRelays.length === 0 ? STOCK_RELAYS : [];
     return [...new Set([...myRelays, ...stockFloor])];
-  }, [myRelays, config.useAppDmRelays, publishedRelays]);
+  }, [myRelays, config.hostDmRelays, config.useAppDmRelays, publishedRelays]);
   const scanRelaysRef = useRef(scanRelays);
   scanRelaysRef.current = scanRelays;
 

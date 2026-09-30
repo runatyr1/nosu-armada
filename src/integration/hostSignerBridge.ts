@@ -1,9 +1,9 @@
 /**
  * NIP-07-compatible signer facade for the Nosu host application.
  *
- * Armada continues to own its login records, database, relay routing and all
- * protocol code. Only signer operations cross this boundary, over an
- * origin-checked postMessage channel. No secret key is requested or exposed.
+ * Armada keeps its login records, database and protocol code. Nosu supplies
+ * signer operations and an ephemeral DM relay choice over an origin-checked
+ * postMessage channel. No secret key is requested or exposed.
  */
 
 const PROTOCOL = "nosu-groups-v1";
@@ -13,6 +13,8 @@ type HostSession = {
   pubkey?: string;
   signerKind?: "privatekey" | "nip07" | "nip46";
 };
+
+export type HostDmRelays = { pubkey: string; relays: string[] };
 
 export type HostTheme = {
   name: string;
@@ -34,8 +36,10 @@ type ResponseMessage = {
 
 let currentSession: HostSession = { status: "anonymous" };
 let currentTheme: HostTheme | undefined;
+let currentDmRelays: HostDmRelays | undefined;
 const listeners = new Set<(session: HostSession) => void>();
 const themeListeners = new Set<() => void>();
+const dmRelayListeners = new Set<() => void>();
 const navigationListeners = new Set<(path: string) => void>();
 let requestedPath: string | undefined;
 type QueuedCall = {
@@ -163,6 +167,10 @@ function request(method: string, params: unknown[] = []): Promise<unknown> {
 
 function notifySession(session: HostSession): void {
   currentSession = session;
+  if (currentDmRelays && currentDmRelays.pubkey !== session.pubkey) {
+    currentDmRelays = undefined;
+    for (const listener of dmRelayListeners) listener();
+  }
   bridgeLog("session:receive", {
     status: session.status,
     signerKind: session.signerKind,
@@ -200,6 +208,26 @@ export function readHostTheme(value: unknown): HostTheme | undefined {
       primary: colors.primary,
     },
   };
+}
+
+export function readHostDmRelays(value: unknown): HostDmRelays | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const candidate = value as Partial<HostDmRelays>;
+  if (typeof candidate.pubkey !== "string" || !/^[0-9a-f]{64}$/i.test(candidate.pubkey)) return undefined;
+  if (!Array.isArray(candidate.relays) || candidate.relays.length > 30) return undefined;
+  const relays: string[] = [];
+  for (const raw of candidate.relays) {
+    if (typeof raw !== "string") return undefined;
+    try {
+      const url = new URL(raw);
+      if (!["ws:", "wss:"].includes(url.protocol) || !url.hostname || url.username || url.password || url.hash || url.search) return undefined;
+      const normalized = url.toString().replace(/\/$/, "");
+      if (!relays.includes(normalized)) relays.push(normalized);
+    } catch {
+      return undefined;
+    }
+  }
+  return { pubkey: candidate.pubkey.toLowerCase(), relays };
 }
 
 if (embedded && parentOrigin) {
@@ -249,6 +277,15 @@ if (embedded && parentOrigin) {
       currentTheme = theme;
       bridgeLog("theme:receive", { name: theme.name, mode: theme.mode });
       for (const listener of themeListeners) listener();
+      return;
+    }
+
+    if (message.type === "dm-relays") {
+      const choice = readHostDmRelays(message);
+      if (!choice || choice.pubkey !== currentSession.pubkey) return;
+      if (JSON.stringify(choice) === JSON.stringify(currentDmRelays)) return;
+      currentDmRelays = choice;
+      for (const listener of dmRelayListeners) listener();
       return;
     }
 
@@ -335,6 +372,15 @@ export function subscribeHostTheme(listener: () => void): () => void {
   return () => {
     themeListeners.delete(listener);
   };
+}
+
+export function getHostDmRelays(): HostDmRelays | undefined {
+  return currentDmRelays;
+}
+
+export function subscribeHostDmRelays(listener: () => void): () => void {
+  dmRelayListeners.add(listener);
+  return () => { dmRelayListeners.delete(listener); };
 }
 
 export function publishHostNavigation(path: string): void {

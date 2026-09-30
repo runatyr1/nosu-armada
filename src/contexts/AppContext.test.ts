@@ -32,6 +32,13 @@ describe("portable network configuration", () => {
     ]);
   });
 
+  it("uses the Nosu host's ephemeral DM choice without changing stored defaults", () => {
+    const config = { ...defaultConfig, hostDmRelays: ["ws://localhost/relay"] };
+    expect(effectiveDmRelays(config)).toEqual(["ws://localhost/relay"]);
+    expect(effectiveDmRelays({ ...config, hostDmRelays: [] })).toEqual([]);
+    expect(defaultConfig.appDmRelays).toEqual(DM_RELAYS);
+  });
+
   it("keeps NIP-65 write relays in the self-sync set when general use is off", () => {
     const relays = selfStateRelays({
       ...defaultConfig,
