@@ -568,7 +568,7 @@ export function AppRouter() {
   // `v7_relativeSplatPath` were opt-ins under v6 and are the only behavior v7
   // has.
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "") || undefined}>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <HostNavigationSync />
       <NotificationNavigation />
       <SignedInRouterServicesGate />

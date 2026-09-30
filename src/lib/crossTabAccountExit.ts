@@ -1,4 +1,5 @@
 import { ACTIVE_PUBKEY_KEY } from "@/lib/activeAccount";
+import { appRootPath } from "@/lib/appRootPath";
 
 /** Pre-teardown origin-wide epoch; written before any shared push mutation. */
 export const ACCOUNT_EXIT_EPOCH_KEY = "armada:account-exit-epoch:v1";
@@ -79,7 +80,7 @@ export function installCrossTabAccountExit(
   const reload = () => {
     if (reloading) return;
     reloading = true;
-    (options.reload ?? (() => window.location.assign("/")))();
+    (options.reload ?? (() => window.location.assign(appRootPath())))();
   };
   const acceptEpoch = (epoch: AccountExitEpoch | undefined) => {
     if (!epoch || epoch.fromPubkey !== options.pubkey) return;

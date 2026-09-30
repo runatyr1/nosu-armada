@@ -62,6 +62,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.unstubAllEnvs();
   vi.unstubAllGlobals();
   localStorage.clear();
   _resetActiveAccountForTests();
@@ -87,6 +88,13 @@ describe("reorderLogins", () => {
 });
 
 describe("switchAccount", () => {
+  it("reloads inside Armada's embedded base after a host account switch", async () => {
+    vi.stubEnv("BASE_URL", "/groups-app/");
+
+    await switchAccount(LOGINS, "id-b");
+
+    expect(assign).toHaveBeenCalledWith("/groups-app/");
+  });
   it("persists the reordered list and then reloads at the root", async () => {
     await switchAccount(LOGINS, "id-b");
 

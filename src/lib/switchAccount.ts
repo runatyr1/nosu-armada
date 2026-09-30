@@ -6,6 +6,7 @@ import {
   runBeforeAccountExit,
 } from "@/lib/beforeAccountExit";
 import { beginCrossTabAccountExit } from "@/lib/crossTabAccountExit";
+import { appRootPath } from "@/lib/appRootPath";
 import { beginAccountExit, exitDone, exitStep } from "@/components/accountExitState";
 
 import type { NLoginType } from "@nostrify/react/login";
@@ -116,7 +117,7 @@ export async function switchAccount(
 ): Promise<void> {
   const reordered = reorderLogins(logins, id);
   if (!reordered) return;
-  await persistAndReload(reordered, "/");
+  await persistAndReload(reordered, appRootPath());
 }
 
 /**
@@ -130,7 +131,7 @@ export async function addAndSwitchAccount(
   login: NLoginType,
 ): Promise<void> {
   const next = [login, ...logins.filter((existing) => existing.id !== login.id)];
-  await persistAndReload(next, "/");
+  await persistAndReload(next, appRootPath());
 }
 
 /**
@@ -148,5 +149,5 @@ export async function signOutAccount(
 ): Promise<void> {
   const remaining = logins.filter((login) => login.id !== id);
   if (remaining.length === 0) return;
-  await persistAndReload(remaining, "/");
+  await persistAndReload(remaining, appRootPath());
 }

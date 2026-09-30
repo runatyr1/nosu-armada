@@ -16,6 +16,7 @@ import { purgeClientStorage } from "@/lib/purgeClientStorage";
 import { secureStorage } from "@/lib/secureStorage";
 import { LOGIN_STORAGE_KEY } from "@/lib/switchAccount";
 import { clearWalletStorage } from "@/lib/walletStorage";
+import { appRootPath } from "@/lib/appRootPath";
 
 /** Wrap a navigation so the deadline and the teardown can both call it, once. */
 function navigateOnce(destination: string): () => void {
@@ -53,7 +54,7 @@ function navigateOnce(destination: string): () => void {
 export async function finalLogout(pubkey: string | null): Promise<void> {
   // Instant feedback, before any await.
   beginAccountExit("logout", pubkey ?? "");
-  const go = navigateOnce("/");
+  const go = navigateOnce(appRootPath());
   // The backstop: navigate on the deadline regardless of the teardown below.
   const deadline = setTimeout(go, EXIT_NAV_DEADLINE_MS);
 
