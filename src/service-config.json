@@ -1,4 +1,8 @@
 {
+  "deployment": {
+    "appPath": "/groups-app/",
+    "parentPath": "/groups"
+  },
   "relays": {
     "app": ["wss://relay.ditto.pub", "wss://relay.dreamith.to"],
     "broadcast": ["wss://relay.primal.net"],
